@@ -5,7 +5,7 @@
 ## 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/Sakshi1054/Task-Tracker.git
-cd Interactive-Quiz-Platform
+cd Task-Tracker
 ```
 
 ## 2️⃣ Install Dependencies
