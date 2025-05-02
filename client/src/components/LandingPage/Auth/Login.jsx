@@ -1,12 +1,17 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '../Header';
+import axios from "axios"
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  const [error, setError] = useState(null); 
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,10 +21,28 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement login logic
-    console.log('Login form submitted:', formData);
+
+    try {
+      // Make the POST request using axios
+      const response = await axios.post('http://localhost:8000/api/users/signin', formData);
+      console.log('User registered successfully:', response.data);
+      toast.success("Login successful!", {
+        position: "top-right",
+        autoClose: 1500,
+      });
+
+      navigate('/home');
+    } catch (error) {
+      if (error.response) {
+        setError(error.response.data.message || 'An error occurred');
+      } else {
+        setError('Something went wrong');
+      }
+      console.error('SignIn error:', error);
+      toast.error(error.response?.data?.message || "An error occurred. Please try again.");
+    }
   };
 
   return (

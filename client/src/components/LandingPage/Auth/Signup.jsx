@@ -1,14 +1,19 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '../Header';
+import axios from "axios"
+import { toast } from 'react-toastify';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     email: '',
     password: '',
     country: '',
   });
+
+  const [error, setError] = useState(null); 
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,10 +23,33 @@ const Signup = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement signup logic
-    console.log('Signup form submitted:', formData);
+
+    try {
+      // Make the POST request using axios
+      const response = await axios.post('http://localhost:8000/api/users/register', formData);
+      console.log('User registered successfully:', response.data);
+
+      toast.success("User registered successfully!", {
+        position: "top-right",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+
+      navigate('/login');
+    } catch (error) {
+      if (error.response) {
+        setError(error.response.data.message || 'An error occurred');
+        toast.error(error.response?.data?.message || "An error occurred. Please try again.");
+      } else {
+        setError('Something went wrong');
+      }
+      console.error('Signup error:', error);
+    }
   };
 
   return (
@@ -40,15 +68,15 @@ const Signup = () => {
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label htmlFor="name" className="sr-only">Full Name</label>
+                <label htmlFor="fullName" className="sr-only">Full Name</label>
                 <input
-                  id="name"
-                  name="name"
+                  id="fullName"
+                  name="fullName"
                   type="text"
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-white placeholder-gray-400 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm mb-4"
                   placeholder="Full Name"
-                  value={formData.name}
+                  value={formData.fullName}
                   onChange={handleChange}
                 />
               </div>
